@@ -1,17 +1,18 @@
-const express = require('express');
-const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
-const {
+import express from "express";
+import authMiddleware from "../middleware/authMiddleware.js";
+import {
   getComments,
   createComment,
   updateComment,
   deleteComment
-} = require('../controllers/commentController');
+} from "../controllers/commentController.js";
 
-// rutas publicas y protegidas
-router.get('/', getComments);
-router.post('/', authMiddleware, createComment);
-router.put('/:id', authMiddleware, updateComment);
-router.delete('/:id', authMiddleware, deleteComment);
+const router = express.Router();
 
-module.exports = router;
+// rutas públicas y protegidas
+router.get("/", getComments);
+router.post("/", authMiddleware, createComment);
+router.put("/:id", authMiddleware, updateComment);
+router.delete("/:id", authMiddleware, deleteComment);
+
+export default router;
