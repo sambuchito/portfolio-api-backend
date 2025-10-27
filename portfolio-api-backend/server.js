@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import app from "./src/app.js";
 import connectDB from "./src/config/db.js";
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import commentRoutes from './routes/comments.js';
-import responseRoutes from './routes/responses.js';
+import authRoutes from './src/routes/auth.routes.js';
+import userRoutes from './src/routes/users.js';
+import commentRoutes from './src/routes/commentRoutes.js';
+import responseRoutes from './src/routes/responseRoutes.js';
 
 
 dotenv.config();
