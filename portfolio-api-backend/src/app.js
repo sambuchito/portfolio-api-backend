@@ -11,6 +11,10 @@ app.use(express.json());
 // para rutas de autenticacion
 app.use("/api/auth", authRoutes);
 
+// comentarios
+const commentRoutes = require('./routes/commentRoutes');
+app.use('/api/comments', commentRoutes);
+
 // ruta de prueba
 app.get("/", (req, res) => {
   res.send("API Portfolio funcionando moder ducker");
