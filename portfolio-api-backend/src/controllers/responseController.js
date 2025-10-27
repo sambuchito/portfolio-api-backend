@@ -1,61 +1,45 @@
-const Response = require('../models/Response');
+// controllers/responseController.js
+import Response from "../models/Response.js";
 
-// obtener todas las respuestas de un comentario
-const getResponsesByComment = async (req, res) => {
-  const { commentId } = req.params;
-
+// Obtener todas las respuestas de un comentario (público)
+export const getResponsesByComment = async (req, res) => {
   try {
-    const responses = await Response.find({ commentId }).sort({ createdAt: -1 });
+    const responses = await Response.find({ commentId: req.params.commentId }).sort({ createdAt: -1 });
     res.json(responses);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener las respuestas' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-// crear nueva respuesta
-const createResponse = async (req, res) => {
-  const { commentId } = req.params;
-  const { name, email, message } = req.body;
-
+// Crear una respuesta (requiere token)
+export const createResponse = async (req, res) => {
   try {
-    const newResponse = new Response({ commentId, name, email, message });
-    await newResponse.save();
+    const response = new Response({ ...req.body, commentId: req.params.commentId });
+    const newResponse = await response.save();
     res.status(201).json(newResponse);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al crear la respuesta' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };
 
-// editar una respuesta
-const updateResponse = async (req, res) => {
-  const { id } = req.params;
-  const { message } = req.body;
-
+// Actualizar respuesta (requiere token)
+export const updateResponse = async (req, res) => {
   try {
-    const updated = await Response.findByIdAndUpdate(id, { message }, { new: true });
-    if (!updated) return res.status(404).json({ message: 'Respuesta no encontrada' });
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar la respuesta' });
+    const updatedResponse = await Response.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedResponse) return res.status(404).json({ message: "Respuesta no encontrada" });
+    res.json(updatedResponse);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };
 
-// eliminar una respuesta
-const deleteResponse = async (req, res) => {
-  const { id } = req.params;
-
+// Eliminar respuesta (requiere token)
+export const deleteResponse = async (req, res) => {
   try {
-    const deleted = await Response.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ message: 'Respuesta no encontrada' });
-    res.json({ message: 'Respuesta eliminada correctamente' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar la respuesta' });
+    const deletedResponse = await Response.findByIdAndDelete(req.params.id);
+    if (!deletedResponse) return res.status(404).json({ message: "Respuesta no encontrada" });
+    res.json({ message: "Respuesta eliminada correctamente" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-};
-
-module.exports = {
-  getResponsesByComment,
-  createResponse,
-  updateResponse,
-  deleteResponse
 };

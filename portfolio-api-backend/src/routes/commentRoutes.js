@@ -1,5 +1,5 @@
 import express from "express";
-import authMiddleware from "../middleware/authMiddleware.js";
+import { authenticate } from "../middleware/authMiddleware.js";
 import {
   getComments,
   createComment,
@@ -11,8 +11,8 @@ const router = express.Router();
 
 // rutas públicas y protegidas
 router.get("/", getComments);
-router.post("/", authMiddleware, createComment);
-router.put("/:id", authMiddleware, updateComment);
-router.delete("/:id", authMiddleware, deleteComment);
+router.post("/", authenticate, createComment);
+router.put("/:id", authenticate, updateComment);
+router.delete("/:id", authenticate, deleteComment);
 
 export default router;

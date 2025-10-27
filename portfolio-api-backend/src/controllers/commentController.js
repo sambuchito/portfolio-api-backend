@@ -1,58 +1,45 @@
-const Comment = require('../models/Comment');
+// controllers/commentController.js
+import Comment from "../models/Comment.js";
 
-// obtener todos los comentarios
-const getComments = async (req, res) => {
+// Obtener todos los comentarios (público)
+export const getComments = async (req, res) => {
   try {
     const comments = await Comment.find().sort({ createdAt: -1 });
     res.json(comments);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los comentarios' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-// crear nuevo comentario
-const createComment = async (req, res) => {
-  const { name, email, message } = req.body;
-
+// Crear un comentario (requiere token)
+export const createComment = async (req, res) => {
   try {
-    const newComment = new Comment({ name, email, message });
-    await newComment.save();
+    const comment = new Comment(req.body);
+    const newComment = await comment.save();
     res.status(201).json(newComment);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al crear el comentario' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };
 
-// editar comentario
-const updateComment = async (req, res) => {
-  const { id } = req.params;
-  const { message } = req.body;
-
+// Actualizar comentario (requiere token)
+export const updateComment = async (req, res) => {
   try {
-    const updated = await Comment.findByIdAndUpdate(id, { message }, { new: true });
-    if (!updated) return res.status(404).json({ message: 'Comentario no encontrado' });
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el comentario' });
+    const updatedComment = await Comment.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedComment) return res.status(404).json({ message: "Comentario no encontrado" });
+    res.json(updatedComment);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };
 
-// eliminar comentario
-const deleteComment = async (req, res) => {
-  const { id } = req.params;
-
+// Eliminar comentario (requiere token)
+export const deleteComment = async (req, res) => {
   try {
-    const deleted = await Comment.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ message: 'Comentario no encontrado' });
-    res.json({ message: 'Comentario eliminado correctamente' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar el comentario' });
+    const deletedComment = await Comment.findByIdAndDelete(req.params.id);
+    if (!deletedComment) return res.status(404).json({ message: "Comentario no encontrado" });
+    res.json({ message: "Comentario eliminado correctamente" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-};
-
-module.exports = {
-  getComments,
-  createComment,
-  updateComment,
-  deleteComment
 };
