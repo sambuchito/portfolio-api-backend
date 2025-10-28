@@ -17,7 +17,12 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ 
+      name, 
+      email, 
+      password: hashedPassword,
+    });
+
     await newUser.save();
 
     res.status(201).json({
@@ -36,7 +41,7 @@ export const registerUser = async (req, res) => {
 };
 
 // LOGIN
-export const login = async (req, res) => {
+export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -46,22 +51,29 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Contraseña incorrecta" });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || "mi_secreto_super_seguro", {
+    if (!process.env.JWT_SECRET) {
+      console.warn("⚠️ No se ha definido JWT_SECRET en el archivo .env. Usando valor por defecto.");
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, 
+      process.env.JWT_SECRET || "mi_secreto_super_seguro", {
       expiresIn: "1h",
     });
 
     res.status(200).json({
       message: "Login exitoso",
-      token,
+      token: `Bearer ${token}`,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        createdAt: user.createdAt,
       },
     });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error en el login:", error);
     res.status(500).json({ message: "Error del servidor" });
   }
 };
