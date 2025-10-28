@@ -2,6 +2,7 @@ import express from "express";
 import { authenticate } from "../middlewares/authMiddleware.js";
 import {
   getComments,
+  getCommentById,
   createComment,
   updateComment,
   deleteComment
@@ -13,6 +14,8 @@ const router = express.Router();
 
 // READ
 router.get("/", getComments);
+router.get("/:id", getCommentById);
+
 
 // CREATE
 router.post("/", authenticate, createComment);

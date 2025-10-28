@@ -1,6 +1,6 @@
 import Comment from "../models/Comment.js";
 
-// GET todos los comentarios - publico
+// GET todos los comentarios / by id - publico
 export const getComments = async (req, res) => {
   try {
     const comments = await Comment.find().sort({ createdAt: -1 });
@@ -10,7 +10,18 @@ export const getComments = async (req, res) => {
   }
 };
 
-// PSOT comentario - protegido
+export const getCommentById = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) return res.status(404).json({ message: "Comentario no encontrado" });
+    res.json(comment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+// POST comentario - protegido
 export const createComment = async (req, res) => {
   try {
     const comment = new Comment(req.body);
