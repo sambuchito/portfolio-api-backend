@@ -1,7 +1,6 @@
-// controllers/commentController.js
 import Comment from "../models/Comment.js";
 
-// Obtener todos los comentarios (público)
+// GET todos los comentarios - publico
 export const getComments = async (req, res) => {
   try {
     const comments = await Comment.find().sort({ createdAt: -1 });
@@ -11,7 +10,7 @@ export const getComments = async (req, res) => {
   }
 };
 
-// Crear un comentario (requiere token)
+// PSOT comentario - protegido
 export const createComment = async (req, res) => {
   try {
     const comment = new Comment(req.body);
@@ -22,10 +21,14 @@ export const createComment = async (req, res) => {
   }
 };
 
-// Actualizar comentario (requiere token)
+// PUT actualizar comentario - protegido
 export const updateComment = async (req, res) => {
   try {
-    const updatedComment = await Comment.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedComment = await Comment.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { new: true }
+    );
     if (!updatedComment) return res.status(404).json({ message: "Comentario no encontrado" });
     res.json(updatedComment);
   } catch (err) {
@@ -33,7 +36,7 @@ export const updateComment = async (req, res) => {
   }
 };
 
-// Eliminar comentario (requiere token)
+// DELETE comentario - protegido
 export const deleteComment = async (req, res) => {
   try {
     const deletedComment = await Comment.findByIdAndDelete(req.params.id);
