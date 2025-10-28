@@ -24,6 +24,10 @@ export const getCommentById = async (req, res) => {
 // POST comentario - protegido
 export const createComment = async (req, res) => {
   try {
+    if (!req.body.name || !req.body.email || !req.body.message) {
+      return res.status(400).json({ message: "Todos los campos son obligatorios" });
+    }
+
     const comment = new Comment(req.body);
     const newComment = await comment.save();
     res.status(201).json(newComment);

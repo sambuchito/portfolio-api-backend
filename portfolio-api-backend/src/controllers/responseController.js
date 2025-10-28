@@ -1,8 +1,7 @@
-// controllers/responseController.js
 import Response from "../models/Response.js";
 
-// Obtener todas las respuestas de un comentario (público)
-export const getResponsesByComment = async (req, res) => {
+// get todas las respuestas de un comentario - publico
+export const getResponses = async (req, res) => {
   try {
     const responses = await Response.find({ commentId: req.params.commentId }).sort({ createdAt: -1 });
     res.json(responses);
@@ -11,10 +10,27 @@ export const getResponsesByComment = async (req, res) => {
   }
 };
 
-// Crear una respuesta (requiere token)
+// GET respuesta por ID - publico
+export const getResponseById = async (req, res) => {
+  try {
+    const response = await Response.findById(req.params.id);
+    if (!response) return res.status(404).json({ message: "Respuesta no encontrada" });
+    res.json(response);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// POST una respuesta - protegida
 export const createResponse = async (req, res) => {
   try {
-    const response = new Response({ ...req.body, commentId: req.params.commentId });
+    const { commentId, name, email, message } = req.body;
+
+    if (!commentId || !name || !email || !message) {
+      return res.status(400).json({ message: "Todos los campos son obligatorios" });
+    }
+
+    const response = new Response({ commentId, name, email, message });
     const newResponse = await response.save();
     res.status(201).json(newResponse);
   } catch (err) {
@@ -22,10 +38,14 @@ export const createResponse = async (req, res) => {
   }
 };
 
-// Actualizar respuesta (requiere token)
+// PUT respuesta - protegida
 export const updateResponse = async (req, res) => {
   try {
-    const updatedResponse = await Response.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedResponse = await Response.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { new: true }
+    );
     if (!updatedResponse) return res.status(404).json({ message: "Respuesta no encontrada" });
     res.json(updatedResponse);
   } catch (err) {
@@ -33,7 +53,7 @@ export const updateResponse = async (req, res) => {
   }
 };
 
-// Eliminar respuesta (requiere token)
+// DELETE respuesta - protegida
 export const deleteResponse = async (req, res) => {
   try {
     const deletedResponse = await Response.findByIdAndDelete(req.params.id);

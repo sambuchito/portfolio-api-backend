@@ -1,7 +1,8 @@
 import express from 'express';
 import { authenticate } from '../middlewares/authMiddleware.js';
 import {
-  getResponsesByComment,
+  getResponses,
+  getResponseById,
   createResponse,
   updateResponse,
   deleteResponse
@@ -9,10 +10,17 @@ import {
 
 const router = express.Router();
 
+// READ - all / id
+router.get('/', getResponses);
+router.get('/:id', getResponseById);
 
-router.get('/:commentId', getResponsesByComment);
-router.post('/:commentId', authenticate, createResponse);
+// CREATE
+router.post('/', authenticate, createResponse);
+
+// UPDATE
 router.put('/:id', authenticate, updateResponse);
+
+// DELETE
 router.delete('/:id', authenticate, deleteResponse);
 
 export default router;
