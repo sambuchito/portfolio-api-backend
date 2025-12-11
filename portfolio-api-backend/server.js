@@ -1,4 +1,9 @@
 import dotenv from "dotenv";
+dotenv.config();
+//import { createRequire } from 'module';
+//const require = createRequire(import.meta.url);
+//require('dotenv').config();
+
 import app from "./src/app.js";
 import connectDB from "./src/config/db.js";
 import authRoutes from './src/routes/auth.routes.js';
@@ -6,8 +11,6 @@ import userRoutes from './src/routes/users.js';
 import commentRoutes from './src/routes/commentRoutes.js';
 import responseRoutes from './src/routes/responseRoutes.js';
 
-
-dotenv.config();
 
 // Conexión a la base de datos
 connectDB();

@@ -6,8 +6,17 @@ import responseRoutes from "./routes/responseRoutes.js";
 
 const app = express();
 
+//definir dis 5173 o 3000
+const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
+
 // Middlewares base
-app.use(cors());
+app.use(cors({
+    origin: allowedOrigin,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+}));
+
+// app.use(cors({ origin: "http://localhost:3000", credentials: true}));
 app.use(express.json());
 
 // Rutas

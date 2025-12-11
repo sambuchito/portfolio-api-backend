@@ -14,15 +14,7 @@ export const registerUser = async (req, res) => {
     if (existingUser)
       return res.status(400).json({ message: "El email ya está registrado" });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({ 
-      name, 
-      email, 
-      password: hashedPassword,
-    });
-
+    const newUser = new User({ name, email, password });
     await newUser.save();
 
     res.status(201).json({
@@ -51,19 +43,23 @@ export const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Contraseña incorrecta" });
 
-    if (!process.env.JWT_SECRET) {
-      console.warn("⚠️ No se ha definido JWT_SECRET en el archivo .env. Usando valor por defecto.");
+    const JWT_SECRET = process.env.JWT_SECRET;
+
+    if (!JWT_SECRET) {
+      //console.warn("⚠️ No se ha definido JWT_SECRET en el archivo .env. Usando valor por defecto.");
+      console.error("JWT_SECRET no definido. Error de configuración.");
+      return res.status(500).json({ message: "Error de configuración del servidor." });
     }
 
     const token = jwt.sign(
       { id: user._id, role: user.role }, 
-      process.env.JWT_SECRET || "mi_secreto_super_seguro", {
-      expiresIn: "1h",
-    });
+      JWT_SECRET,
+      { expiresIn: "3h" }
+    );
 
     res.status(200).json({
       message: "Login exitoso",
-      token: `Bearer ${token}`,
+      token: token,
       user: {
         id: user._id,
         name: user.name,

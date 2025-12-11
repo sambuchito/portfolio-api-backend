@@ -65,6 +65,7 @@ Forma parte del backend de un portfolio web personal y tiene como objetivo manej
 		PORT=4000
 		MONGO_URI=mongodb://127.0.0.1:27017/portfolio_api
 		JWT_SECRET=una_clave_super_secreta
+		CLIENT_URL=http://localhost:5173
 
 
 4. Ejecutar el servidor

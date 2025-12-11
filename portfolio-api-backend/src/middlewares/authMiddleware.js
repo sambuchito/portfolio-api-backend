@@ -1,6 +1,13 @@
 import jwt from 'jsonwebtoken';
 
+
 export const authenticate = (req, res, next) => {
+  const JWT_SECRET = process.env.JWT_SECRET;
+  
+  if (!JWT_SECRET) {
+        console.error("JWT_SECRET no está definido. ¡Revisa tu archivo .env!");
+        return res.status(500).json({ message: 'Error de configuración del servidor.' });
+    }
   // obtengo token del header
   const authHeader = req.header('Authorization');
 
@@ -13,7 +20,7 @@ export const authenticate = (req, res, next) => {
 
   try {
     // verifico el token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_secreto_super_seguro');
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     // guardo datos del usuario en la request
     req.user = decoded;
@@ -21,6 +28,7 @@ export const authenticate = (req, res, next) => {
     // paso al siguiente middleware o controlador
     next();
   } catch (error) {
+    console.error("Fallo la verificación de JWT:", error.message);
     res.status(401).json({ message: 'Token inválido o expirado.' });
   }
 };

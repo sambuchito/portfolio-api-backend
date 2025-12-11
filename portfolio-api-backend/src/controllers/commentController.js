@@ -23,17 +23,31 @@ export const getCommentById = async (req, res) => {
 
 // POST comentario - protegido
 export const createComment = async (req, res) => {
-  try {
-    if (!req.body.name || !req.body.email || !req.body.message) {
-      return res.status(400).json({ message: "Todos los campos son obligatorios" });
-    }
+    try {
+        // 💡 1. Asegúrate de que el Frontend envíe 'content'
+        const { content, funFactId } = req.body; 
+        
+        // 💡 2. Asegúrate de que el ID del usuario venga del token
+        const userId = req.user.id; // o req.user._id, dependiendo de cómo firmaste el JWT
 
-    const comment = new Comment(req.body);
-    const newComment = await comment.save();
-    res.status(201).json(newComment);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+        if (!content || !funFactId) {
+            return res.status(400).json({ message: 'Faltan campos requeridos (content, funFactId).' });
+        }
+        
+        const newComment = new Comment({
+            content,
+            user: userId, // 💡 Debe coincidir con el campo de usuario en tu modelo
+            funFact: funFactId
+        });
+        
+        await newComment.save();
+        
+        // ...
+    } catch (error) {
+        // 💡 3. ¡IMPORTANTE! Agrega un console.log aquí para ver la causa real.
+        console.error("Error al crear comentario:", error.message);
+        return res.status(500).json({ message: 'Error interno del servidor al guardar comentario.' });
+    }
 };
 
 // PUT actualizar comentario - protegido
