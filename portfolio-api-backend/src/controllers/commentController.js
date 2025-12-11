@@ -27,8 +27,7 @@ export const createComment = async (req, res) => {
         // 💡 1. Asegúrate de que el Frontend envíe 'content'
         const { content, funFactId } = req.body; 
         
-        // 💡 2. Asegúrate de que el ID del usuario venga del token
-        const userId = req.user.id; // o req.user._id, dependiendo de cómo firmaste el JWT
+        const userId = req.user.id; // o req.user._id, dependiendo de como firma el JWT
 
         if (!content || !funFactId) {
             return res.status(400).json({ message: 'Faltan campos requeridos (content, funFactId).' });
@@ -36,16 +35,26 @@ export const createComment = async (req, res) => {
         
         const newComment = new Comment({
             content,
-            user: userId, // 💡 Debe coincidir con el campo de usuario en tu modelo
+            user: userId,
             funFact: funFactId
         });
         
         await newComment.save();
+
+        const savedComment = await newComment.populate([
+        { path: 'user', select: 'name email' }, // o 'email'
+        { path: 'funFact' }
+    ]);
         
-        // ...
+        return res.status(201).json(savedComment);
+
     } catch (error) {
-        // 💡 3. ¡IMPORTANTE! Agrega un console.log aquí para ver la causa real.
-        console.error("Error al crear comentario:", error.message);
+        console.error("Error al crear comentario:", error);
+
+        if (error.name === 'ValidationError') {
+             return res.status(400).json({ message: error.message });
+        }
+
         return res.status(500).json({ message: 'Error interno del servidor al guardar comentario.' });
     }
 };

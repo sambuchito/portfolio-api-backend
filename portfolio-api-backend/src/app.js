@@ -9,15 +9,18 @@ const app = express();
 //definir dis 5173 o 3000
 const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
 
+app.use(express.json());
+
 // Middlewares base
 app.use(cors({
     origin: allowedOrigin,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // app.use(cors({ origin: "http://localhost:3000", credentials: true}));
-app.use(express.json());
+
 
 // Rutas
 app.use("/api/auth", authRoutes);
