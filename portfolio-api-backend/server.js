@@ -4,8 +4,8 @@ dotenv.config();
 //const require = createRequire(import.meta.url);
 //require('dotenv').config();
 
-import app from "./app.js";
-import connectDB from "./config/db.js";
+import app from "./src/app.js";
+import connectDB from "./src/config/db.js";
 //import authRoutes from './src/routes/auth.routes.js';
 //import userRoutes from './src/routes/users.js';
 //import commentRoutes from './src/routes/commentRoutes.js';
